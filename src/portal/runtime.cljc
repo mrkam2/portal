@@ -78,19 +78,42 @@
   [value]
   [:value value (meta value) (type value)])
 
+(defn- cachable? [value]
+  (try (hash value)
+       true
+       (catch #?(:clj Exception :cljs :default :cljr Exception) _)))
+
+(defn- can-meta? [value]
+  #?(:clj  (and
+            (not (instance? clojure.lang.Range value))
+            (or (instance? clojure.lang.IObj value)
+                (var? value)))
+     :cljr (or (instance? clojure.lang.IObj value)
+               (var? value))
+     :cljs (implements? IMeta value)))
+
 (defn- value->id [value]
-  (let [k (value->key value)]
-    (-> (:value-cache *session*)
-        (swap!
-         (fn [cache]
-           (if (contains? cache k)
-             cache
-             (let [id (next-id)]
-               (assoc cache [:id id] value k id)))))
-        (get k))))
+  (if-not (cachable? value)
+    (let [id (next-id)]
+      (swap! (:value-cache *session*) assoc [:id id]
+             (if-not (can-meta? value)
+               value
+               (vary-meta value assoc ::id id)))
+      id)
+    (let [k (value->key value)]
+      (-> (:value-cache *session*)
+          (swap!
+           (fn [cache]
+             (if (contains? cache k)
+               cache
+               (let [id (next-id)]
+                 (assoc cache [:id id] value k id)))))
+          (get k)))))
 
 (defn- value->id? [value]
-  (get @(:value-cache *session*) (value->key value)))
+  (try
+    (get @(:value-cache *session*) (value->key value))
+    (catch #?(:clj Exception :cljs :default :cljr Exception) _)))
 
 (defn- id->value [id]
   (get @(:value-cache *session*) [:id id]))
@@ -130,15 +153,6 @@
     (to-object buffer value :object nil)))
 
 #?(:bb (def clojure.lang.Range (type (range 1.0))))
-
-(defn- can-meta? [value]
-  #?(:clj  (and
-            (not (instance? clojure.lang.Range value))
-            (or (instance? clojure.lang.IObj value)
-                (var? value)))
-     :cljr (or (instance? clojure.lang.IObj value)
-               (var? value))
-     :cljs (implements? IMeta value)))
 
 (defn- has? [m k]
   (try
