@@ -77,7 +77,7 @@
     (dom/unmount-component-at-node element)
     (dom/render [app (.-id data) value] element functional-compiler)))
 
-(defn activate [ctx]
+(defn ^:export activate [ctx]
   (cljs/init)
   (reset! context ctx)
   (reset! state/sender send!)

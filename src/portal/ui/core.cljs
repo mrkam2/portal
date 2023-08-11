@@ -1,5 +1,6 @@
 (ns ^:no-doc portal.ui.core
   (:require ["react" :as react]
+            [portal.extensions.vs-code-notebook]
             [portal.ui.app :as app]
             [portal.ui.cljs :as cljs]
             [portal.ui.inspector :as ins]
@@ -38,11 +39,12 @@
   (into [:<> (meta @state/value-cache)] children))
 
 (defn render-app []
-  (dom/render [with-cache
-               [opts/with-options
-                [connected-app]]]
-              (.getElementById js/document "root")
-              functional-compiler))
+  (when-let [el (.getElementById js/document "root")]
+    (dom/render [with-cache
+                 [opts/with-options
+                  [connected-app]]]
+                el
+                functional-compiler)))
 
 (defn main! []
   (cljs/init)

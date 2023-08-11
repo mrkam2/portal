@@ -158,4 +158,21 @@
     ::package     "#8cd0d3"
     ::exception   "#cc9393"
     ::diff-add    "#9fc59f"
+    ::diff-remove "#cc9393"}
+   ::clerk
+   {::text        "#dcdccc"
+    ::background  "#383838"
+    ::background2 "var(--gray-panel-color)"
+    ::boolean     "#bfebbf"
+    ::string      "#cc9393"
+    ::keyword     "#afd8af"
+    ::namespace   "#5c888b"
+    ::tag         "#f0dfaf"
+    ::symbol      "#dcdccc"
+    ::number      "#8cd0d3"
+    ::uri         "var(--link-color)"
+    ::border      "var(--brand-color)"
+    ::package     "#8cd0d3"
+    ::exception   "#cc9393"
+    ::diff-add    "#9fc59f"
     ::diff-remove "#cc9393"}})

@@ -13,7 +13,9 @@
    :compiler-options
    {:infer-externs true
     :warnings-as-errors true
-    :output-feature-set :es2018}
+    :output-feature-set :es2018
+    :output-wrapper true
+    :rename-prefix-namespace "__PORTAL_INSPECTOR__"}
    :build-hooks [(portal.shadow.remote/hook {:port 7891})]
    :modules {:main {:init-fn portal.ui.core/main!}}
    :release {:output-dir "resources/portal/"}

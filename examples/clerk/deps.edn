@@ -1,0 +1,4 @@
+{:paths ["src" "dev"]
+ :deps
+ {djblue/portal {:local/root "../../"}
+  io.github.nextjournal/clerk {:mvn/version "0.14.919"}}}
