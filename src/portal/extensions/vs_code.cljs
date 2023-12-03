@@ -134,6 +134,19 @@
   (when (fs/exists (fs/join workspace "resources/portal-dev/main.js"))
     (.executeCommand vscode/commands "setContext" "portal:is-dev" true)))
 
+(defn- invoke [k v & args]
+  (let [args (map #(edn/read-string (.toString %)) args)]
+    (.log js/console (str "portal.api/" (name k)) (pr-str args))
+    (apply v args)))
+
+(defn- get-portal-api []
+  (clj->js
+   (reduce-kv
+    (fn [out k v]
+      (assoc out (name k) (partial #'invoke k v)))
+    {}
+    (dissoc (ns-publics 'portal.api) 'repl '*nrepl-init*))))
+
 (defn activate
   [^js ctx]
   (when ctx
@@ -149,7 +162,8 @@
     (setup-notebook-handler)
     (add-tap #'p/submit))
   (doseq [[command f] (get-commands)]
-    (register-disposable! (vscode/commands.registerCommand (name command) f))))
+    (register-disposable! (vscode/commands.registerCommand (name command) f)))
+  #js{:api (get-portal-api)})
 
 (defn deactivate
   []
